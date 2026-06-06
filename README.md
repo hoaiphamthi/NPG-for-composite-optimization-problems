@@ -1,5 +1,6 @@
 This document provides instructions for the code accompanying the paper  
-**"Composite Optimization Models via Proximal Gradient Method with Novel Enhanced Adaptive Stepsizes"**  
+**"Composite optimization problems via novel  proximal gradient
+algorithms  and applications"**  
 by Pham Thi Hoai and Nguyen Pham Duy Thai.
 
 ### Introduction
@@ -18,12 +19,11 @@ by Pham Thi Hoai and Nguyen Pham Duy Thai.
 - We use `numpy.random.seed` to ensure reproducibility. Datasets labeled 1–10 correspond to random seeds 1–10. Problems with the same size and random seed should always produce identical results.
 
 ### Running the Experiments
-- To obtain Figure 1, run the file `k_star_illustration.py`.
-- To obtain Figures 2–8, open the corresponding problem file (e.g., `lasso.py`) and set the control variables `LOAD_RESULTS = False` and `PLOT = False`. Then, in `run_experiment.py`, uncomment the relevant function call in `main()` (e.g., `experiment_lasso()`), and run the code.
-- To obtain Figure 9, run the corresponding problem file (e.g., `lasso.py`, `bcqp.py`, etc.) with `LOAD_RESULTS = False`. Set `PLOT = True` to display the plots.
+- To obtain Figures 1–7, open the corresponding problem file (e.g., `lasso.py`) and set the control variables `LOAD_RESULTS = False` and `PLOT = False`. Then, in `run_experiment.py`, uncomment the relevant function call in `main()` (e.g., `experiment_lasso()`), and run the code.
+- To obtain Figure 8, run the corresponding problem file (e.g., `lasso.py`, `bcqp.py`, etc.) with `LOAD_RESULTS = False`. Set `PLOT = True` to display the plots.
 
 ### Obtaining Plots from Presolved Results
-- To reproduce Figures 2–9 using our presolved results, download the `results` folder from the following link:  
+- To reproduce Figures 1–8 using our presolved results, download the `results` folder from the following link:  
   https://drive.google.com/file/d/1l4lDUnLHnA31VLDydmYeSmzNQyEt9TjV/view  
   Place it inside this repository, then run the corresponding file as described above with `LOAD_RESULTS = True`.
 
@@ -32,7 +32,7 @@ by Pham Thi Hoai and Nguyen Pham Duy Thai.
 - The folder results contains the results of all the experiments.
 
 ### Experimental details
-For the figure 9 in the paper, the detailed sizes and random seeds for each problem are provided here:
+For Figure 8 in the paper, the detailed sizes and random seeds for each problem are provided here:
 - Lasso                       : m = 1024, n = 8192, seed = 1   
 - Min length curve problem    : m = 100, n = 10000, seed = 1 
 - Maximum likelyhood problem  : n = 30, lb = 0.1, ub = 1000, M = 50, seed = 1
