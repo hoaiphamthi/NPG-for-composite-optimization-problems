@@ -41,4 +41,4 @@ For Figure 8 in the paper, the detailed sizes and random seeds for each problem 
 - BCFP                        : n = 5000, r = 10, seed = 1
 - NMF problem                 : m = 3000, n = 3000, r = 30, seed = 1
     
-The reconstructed experiment in Figure 1 is obtained by running Lasso.py for m = 1024, n = 4096, seend = 1 using NPG2 as the algorithm.
+
