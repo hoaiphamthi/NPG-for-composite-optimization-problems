@@ -32,7 +32,7 @@ by Pham Thi Hoai and Nguyen Pham Duy Thai.
 - The folder results contains the results of all the experiments.
 
 ### Experimental details
-For Figure 8 in the paper, the detailed sizes and random seeds for each problem are provided here:
+For Figures 8 and 9 in the paper, the detailed sizes and random seeds for each problem are provided here:
 - Lasso                       : m = 1024, n = 8192, seed = 1   
 - Min length curve problem    : m = 100, n = 10000, seed = 1 
 - Maximum likelyhood problem  : n = 30, lb = 0.1, ub = 1000, M = 50, seed = 1
