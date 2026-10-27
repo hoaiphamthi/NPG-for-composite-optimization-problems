@@ -1,5 +1,5 @@
 import numpy as np
-from save_and_plot import save, load, make_all_plots
+from save_and_plot import save, load, make_all_plots, run_algorithms
 from alg import AdProxGrad, ProxGrad, NPG, NPG_quad, AdaPG
 import matplotlib.pyplot as plt
 
@@ -12,6 +12,7 @@ SAVE_DATA = False
 LOAD_RESULTS = True
 SAVE_RESULTS = True
 PLOT = False
+RERUN = "all"   # "all": run every algorithm; "npg" / "competitors": re-run only the NPG variants / only the other algorithms and merge them into the saved results
 ######################################################
 
 seed = 1
@@ -59,8 +60,8 @@ def run_bcqp(n=n, r = r, seed=seed, N = N):
         return np.clip(x, -1, 1)
 
     def Run(algo, **kwargs):
-        return algo(oracle_f, g, prox_g, x0, maxit=N, tol=tol, stop="res",mlns_init=True, verbose=False,
-            track=["res", "obj", "grad", "steps", "time"],mfixed_step=1e-3,  **kwargs)
+        return algo(oracle_f, g, prox_g, x0, maxit=N, tol=tol, stop="res",lns_init=True, verbose=False,
+            track=["res", "obj", "grad", "steps", "time"],fixed_step=1e-3,  **kwargs)
 
     results = {}
     if LOAD_RESULTS:
@@ -68,21 +69,15 @@ def run_bcqp(n=n, r = r, seed=seed, N = N):
         for key, history in loaded_results.items():
             results[key] = history
     else:
-        x2, h2 = Run(NPG, params=[0.1, 5.7, 0.99, 0.98], ver=2)
-        results["NPG2"] = h2
-
-        x3, h3 = Run(NPG_quad, params=[0.1, 5.7, 0.99, 0.98])
-        results["NPG_quad"] = h3
-
-        x4, h4 = Run(AdProxGrad)
-        results["AdPG"] = h4
-
-        x5, h5 = Run(AdaPG, params=[3/2, 3/4])
-        results["AdaPG"] = h5
-
+        runners = {
+            "NPG2": lambda: Run(NPG, params = [0.1, 5.7, 0.99, 0.98], ver=2),
+            "NPG_quad": lambda: Run(NPG_quad, params = [0.1, 5.7, 0.99, 0.98]),
+            "AdPG": lambda: Run(AdProxGrad),
+            "AdaPG": lambda: Run(AdaPG, params=[3/2, 3/4]),
+        }
         for param in [[1.1, 0.5], [1.2, 0.5]]:
-            x6, h6 = Run(ProxGrad, params=param)
-            results["PG-LS" + str(param)] = h6
+            runners["PG-LS" + str(param)] = lambda param=param: Run(ProxGrad, params = param)
+        results, xs = run_algorithms(runners, ['NPG2', 'NPG_quad'], name_instance, name, RERUN)
 
     if SAVE_RESULTS and not LOAD_RESULTS:
         save(results, name_instance, name, saving_obj=2)

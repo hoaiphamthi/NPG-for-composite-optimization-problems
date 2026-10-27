@@ -35,6 +35,22 @@ def load(name_instance,name, saving_obj):
     loaded_data = np.load(filename, allow_pickle=True)
     return loaded_data.item()
 
+def result_exists(name_instance, name):
+    return os.path.exists(os.path.join("results", name, name_instance) + ".npy")
+
+def run_algorithms(runners, npg_keys, name_instance, name, rerun):
+    # runners: {key: function returning (x, history)}, in the order of the original experiments.
+    # rerun = "all": every algorithm is run.
+    # rerun = "npg" / "competitors": the saved results are loaded, only the NPG variants / only the
+    # other algorithms are re-run, and any algorithm missing from the saved file is run as well.
+    assert rerun in ("all", "npg", "competitors")
+    results = load(name_instance, name, saving_obj=2) if rerun != "all" and result_exists(name_instance, name) else {}
+    xs = {}
+    for key, runner in runners.items():
+        if rerun == "all" or key not in results or (key in npg_keys) == (rerun == "npg"):
+            xs[key], results[key] = runner()
+    return results, xs
+
 def make_all_plots(results, name_instance,name,save = True, plot_mse = False, plot = True, legend = True):
     plot_res(results, "res", name_instance,name,save = save, plot=plot, legend=legend)
     plot_res(results, "obj", name_instance,name,save = save, plot=plot, legend=legend)

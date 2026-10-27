@@ -1,0 +1,24 @@
+# Local working files (not part of the public code)
+__pycache__/
+.claude/
+AI_docs/
+6ad03eaec803bde179a21f07/
+supplementary/
+plots/
+old_results/
+results_run1_backup/
+results_run2_backup/
+data/
+*.xlsx
+*.txt
+!requirements.txt
+k_star_illustration.py
+signal_reconstruction.*
+
+# Results: only the two folders of the FISTA / classical Armijo tests are published;
+# the full results are available from the link in README.md
+results/*
+!results/FISTA_test/
+!results/classic_armijo/
+!results/FISTA_test/**
+!results/classic_armijo/**

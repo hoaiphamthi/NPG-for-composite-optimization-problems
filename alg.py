@@ -202,7 +202,7 @@ def NPG(oracle_f, g, prox_g, x0, maxit=1000, tol=1e-9, stop="res", lns_init=True
             if t_prev / t_prev_prev < 1:
                 gamma_prime  = np.min([gamma_prime, np.sqrt(1 + t_prev / t_prev_prev)-1])
             t = (1 + gamma_prime) * t_prev
-        x_prev, grad_prev, t_prev,t_prev_prev = x, grad_fx, t, t_prev_prev
+        x_prev, grad_prev, t_prev,t_prev_prev = x, grad_fx, t, t_prev
         x = prox_g(x - t * grad_fx, t)
         end = time.perf_counter()
         residual = np.linalg.norm(x_prev - x) / t
@@ -264,13 +264,13 @@ def NPG_quad(oracle_f, g, prox_g, x0, maxit=1000, tol=1e-9, stop="res", lns_init
                 gamma_prime  = np.min([gamma_prime, np.sqrt(1 + t_prev / t_prev_prev)-1])
             t = (1 + gamma_prime) * t_prev
 
-        x_prev, grad_prev, t_prev,t_prev_prev = x, grad_fx, t, t_prev_prev
+        x_prev, grad_prev, t_prev,t_prev_prev = x, grad_fx, t, t_prev
         x = prox_g(x - t * grad_fx, t)
         end = time.perf_counter()
         residual = np.linalg.norm(x_prev - x) / t
         fx, grad_fx = oracle_f(x)
         current_info = {"res": residual, "obj": obj(fx, x), "grad": np.linalg.norm(grad_fx), "steps": t, "time":end-start, "mse":mse(x, xopt)}
-                
+
         history_dic = collect_history(history_dic, current_info)
         if current_info[stop] <= tol:
             if verbose:
@@ -332,4 +332,73 @@ def ProxGrad(oracle_f, g, prox_g, x0, maxit=1000, tol=1e-9, stop="res", lns_init
     if current_info[stop] > tol:
         if verbose:
             print(f"The PG-LS{params} algorithm terminated without reaching required accuracy")
+    return x, history_dic
+
+
+def FISTA(oracle_f, g, prox_g, x0, maxit=1000, tol=1e-9, stop="res", lns_init=True, verbose=False, track=["res", "obj", "grad", "steps","time"], fixed_step=1e-2, params = [2.0], xopt = 0, res_at="y"):
+    # FISTA with backtracking, Beck & Teboulle (2009), SIAM J. Imaging Sci. 2(1), p. 194.
+    # Stepsize t = 1/L_k, with L_k = eta^{i_k} L_{k-1}, i.e. t is divided by eta until
+    # f(x) <= f(y) + <grad f(y), x - y> + 1/(2t) ||x - y||^2 holds (t is nonincreasing).
+    # "res" is the gradient mapping norm at the extrapolated point, ||y_k - x_k|| / t_k (res_at="y"), or at the
+    # returned point, ||x_k - prox(x_k - t_k grad f(x_k))|| / t_k (res_at="x"; grad f(x_k) is already available from
+    # the backtracking test, and the extra prox is for monitoring only, so its time is not counted).
+    # "grad" is ||grad f(y_k)||.
+    def obj(fx, x):
+        return fx + g(x)
+
+    start = time.perf_counter()
+    eta = params[0]
+
+    if lns_init:
+        t, _, _, _, _, _, lns_iter = linesearch_initial(oracle_f, g, prox_g, x0, fixed_step, veryLargeSize=0.9)
+        if verbose:
+            print(f"Linesearch found initial stepsize {t} in {lns_iter} iterations")
+    else:
+        t = fixed_step
+        if verbose:
+            print("No linesearch, initial stepsize is ", t)
+
+    keys = ["res", "obj", "grad", "steps", "time", "mse"]
+    history_dic = {k: [] for k in keys if k in track}
+    x_prev = y = x0
+    theta = 1.0
+    monitor = 0.0                                    # time spent on res_at="x" monitoring, excluded from "time"
+    fy, grad_fy = oracle_f(y)
+    for i in range(maxit):
+        for _ in range(1000):
+            x = prox_g(y - t * grad_fy, t)
+            fx, grad_fx = oracle_f(x)
+            quad = 1.0 / (2 * t) * np.linalg.norm(x - y)**2
+            if quad >= 1e-12 * max(abs(fx), abs(fy)):
+                lhs = fx - fy - np.sum(grad_fy * (x - y))
+            else:
+                # quad term is below the rounding error of f: use the (convex) bound
+                # f(x) - f(y) - <grad f(y), x-y> <= <grad f(x) - grad f(y), x-y>, as in TFOCS
+                lhs = np.sum((grad_fx - grad_fy) * (x - y))
+            if t < 10**-20 or lhs <= quad:
+                break
+            t /= eta
+        end = time.perf_counter()
+
+        if res_at == "x":
+            tm = time.perf_counter()
+            residual = np.linalg.norm(x - prox_g(x - t * grad_fx, t)) / t
+            monitor_now = time.perf_counter() - tm
+        else:
+            residual, monitor_now = np.linalg.norm(y - x) / t, 0.0
+        current_info = {"res": residual, "obj": obj(fx, x), "grad": np.linalg.norm(grad_fy), "steps": t, "time": end-start-monitor, "mse": mse(x, xopt)}
+        monitor += monitor_now
+        history_dic = collect_history(history_dic, current_info)
+        if current_info[stop] <= tol:
+            if verbose:
+                print(f"The FISTA{params} algorithm reached required accuracy in {i+1} iterations")
+            break
+
+        theta_next = (1 + np.sqrt(1 + 4 * theta**2)) / 2
+        y = x + ((theta - 1) / theta_next) * (x - x_prev)
+        x_prev, theta = x, theta_next
+        fy, grad_fy = oracle_f(y)
+    if current_info[stop] > tol:
+        if verbose:
+            print(f"The FISTA{params} algorithm terminated without reaching required accuracy")
     return x, history_dic

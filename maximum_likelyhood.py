@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import slogdet, inv
-from save_and_plot import  make_all_plots, load, save
+from save_and_plot import  make_all_plots, load, save, run_algorithms
 from alg import AdProxGrad, ProxGrad, NPG, AdaPG
 from scipy.linalg import eigh
 
@@ -13,6 +13,7 @@ SAVE_DATA = False
 LOAD_RESULTS = True
 SAVE_RESULTS = True
 PLOT = False
+RERUN = "all"   # "all": run every algorithm; "npg" / "competitors": re-run only the NPG variants / only the other algorithms and merge them into the saved results
 ######################################################
 
 seed = 1
@@ -77,22 +78,15 @@ def run_maximum_likelyhood(n = n, lb = lb, ub = ub, M = M, seed = seed, N = N):
         for key, history in loaded_results.items():
             results[key] = history
     else:          
-        x1, history1 = Run(NPG, params = [0.1, 5.7, 0.7, 0.69], ver=1)
-        results["NPG1"] = history1
-
-        x2, history2 = Run(NPG, params = [0.1, 5.7, 0.99, 0.98], ver=2)
-        results["NPG2"] = history2
-  
-        x3, history3 = Run(AdProxGrad)
-        results["AdPG"] = history3
-        
-        x4, history4 = Run(AdaPG, params=[3/2, 3/4])
-        results["AdaPG" + str([3/2, 3/4])] = history4
-
+        runners = {
+            "NPG1": lambda: Run(NPG, params = [0.1, 5.7, 0.7, 0.69], ver=1),
+            "NPG2": lambda: Run(NPG, params = [0.1, 5.7, 0.99, 0.98], ver=2),
+            "AdPG": lambda: Run(AdProxGrad),
+            "AdaPG" + str([3/2, 3/4]): lambda: Run(AdaPG, params=[3/2, 3/4]),
+        }
         for param in [[1.1, 0.5], [1.2, 0.5]]:
-            x5, history5 = Run(ProxGrad, params = param)
-            results["PG-LS" + str(param)] = history5
-
+            runners["PG-LS" + str(param)] = lambda param=param: Run(ProxGrad, params = param)
+        results, xs = run_algorithms(runners, ['NPG1', 'NPG2'], name_instance, name, RERUN)
 
     if SAVE_RESULTS and LOAD_RESULTS == False:
         save(results,name_instance,name, saving_obj=2)

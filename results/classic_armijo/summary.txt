@@ -1,0 +1,46 @@
+Proximal gradient method with the classical Armijo backtracking: each search starts from the last accepted stepsize
+(no increase) and halves it until the descent condition holds, PG-LS(1, 0.5).
+Reported: iterations to reach residual <= 1e-5, counting only the iterations before the stepsize falls below 1e-8. Near the
+solution the descent test can fail because of rounding errors, and since the stepsize cannot increase it then collapses;
+the residuals after that point are not meaningful. On Dual-max-entropy the stepsize is reduced to ~1e-4 in the first
+iterations (large curvature at the starting point) and cannot increase afterwards; the residual stays above 1.
+Same instances, starting points, initial stepsize procedure and tolerance as in the paper. Residual: for FISTA the
+gradient mapping at its returned point x_k; for NPG2 and PG-LS the residual ||x_{k+1} - x_k|| / t_k of the paper.
+NPG2: from the main result files results/<problem>/ (available from the link in README.md).
+
+
+lasso_n=1024_m=512_tau=0,01_seed=1
+   NPG2            residual <= 1e-5 after    87 it
+   PG-LS(1, 0.5)   residual <= 1e-5 after   557 it   (6.4 x NPG2)
+
+lasso_n=2048_m=512_tau=0,01_seed=1
+   NPG2            residual <= 1e-5 after   201 it
+   PG-LS(1, 0.5)   residual <= 1e-5 not reached: stepsize collapse at iteration 1607, best residual before it 1.5e-05
+
+lasso_n=2048_m=1024_tau=0,01_seed=1
+   NPG2            residual <= 1e-5 after    86 it
+   PG-LS(1, 0.5)   residual <= 1e-5 not reached: stepsize collapse at iteration 664, best residual before it 2.1e-05
+
+min_len_curve_m=500_n=5000_seed=1
+   NPG2            residual <= 1e-5 after   443 it
+   PG-LS(1, 0.5)   residual <= 1e-5 after  1808 it   (4.1 x NPG2)
+
+min_len_curve_m=2000_n=5000_seed=1
+   NPG2            residual <= 1e-5 after    66 it
+   PG-LS(1, 0.5)   residual <= 1e-5 after   204 it   (3.1 x NPG2)
+
+min_len_curve_m=1000_n=10000_seed=1
+   NPG2            residual <= 1e-5 after   454 it
+   PG-LS(1, 0.5)   residual <= 1e-5 after  1893 it   (4.2 x NPG2)
+
+dual_max_ent_m=500_n=2000_normal_seed=1
+   NPG2            residual <= 1e-5 after    29 it
+   PG-LS(1, 0.5)   residual <= 1e-5 not reached (1300 it, 13 s); best residual 1.8e+00
+
+dual_max_ent_m=2000_n=4000_normal_seed=1
+   NPG2            residual <= 1e-5 after    40 it
+   PG-LS(1, 0.5)   residual <= 1e-5 not reached (2422 it, 180 s); best residual 2.2e+00
+
+dual_max_ent_m=4000_n=5000_normal_seed=1
+   NPG2            residual <= 1e-5 after    55 it
+   PG-LS(1, 0.5)   residual <= 1e-5 not reached (960 it, 180 s); best residual 2.8e+00

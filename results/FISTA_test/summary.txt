@@ -1,0 +1,61 @@
+FISTA with backtracking (Beck-Teboulle 2009), backtracking factor eta in {1.5, 2, 3}; stopping criterion residual <= 1e-6.
+Runs not converged within the paper's N_max were continued (up to 20 N_max or 180 s) to obtain the actual iteration count.
+On Dual-max-entropy FISTA uses the initial line search (its stepsize cannot increase; the paper's methods start from 0.001).
+Same instances, starting points, initial stepsize procedure and tolerance as in the paper. Residual: for FISTA the
+gradient mapping at its returned point x_k; for NPG2 and PG-LS the residual ||x_{k+1} - x_k|| / t_k of the paper.
+NPG2: from the main result files results/<problem>/ (available from the link in README.md).
+
+
+lasso_n=1024_m=512_tau=0,01_seed=1
+   NPG2                91 it    0.031 s
+   FISTA(eta=1.5)     332 it    0.219 s   (3.6 x NPG2 iterations)
+   FISTA(eta=2)       432 it    0.297 s   (4.7 x NPG2 iterations)
+   FISTA(eta=3)       645 it    0.431 s   (7.1 x NPG2 iterations)
+
+lasso_n=2048_m=512_tau=0,01_seed=1
+   NPG2               210 it    0.094 s
+   FISTA(eta=1.5)    1022 it    0.821 s   (4.9 x NPG2 iterations)
+   FISTA(eta=2)       903 it    0.763 s   (4.3 x NPG2 iterations)
+   FISTA(eta=3)      1307 it    1.715 s   (6.2 x NPG2 iterations)
+
+lasso_n=2048_m=1024_tau=0,01_seed=1
+   NPG2                91 it    0.064 s
+   FISTA(eta=1.5)     313 it    0.521 s   (3.4 x NPG2 iterations)
+   FISTA(eta=2)       550 it    1.051 s   (6.0 x NPG2 iterations)
+   FISTA(eta=3)       409 it    0.795 s   (4.5 x NPG2 iterations)
+
+min_len_curve_m=500_n=5000_seed=1
+   NPG2               571 it    0.589 s
+   FISTA(eta=1.5)    2658 it    3.467 s   (4.7 x NPG2 iterations)
+   FISTA(eta=2)      3080 it    4.021 s   (5.4 x NPG2 iterations)
+   FISTA(eta=3)      2448 it    3.087 s   (4.3 x NPG2 iterations)
+
+min_len_curve_m=2000_n=5000_seed=1
+   NPG2                73 it    0.651 s
+   FISTA(eta=1.5)     427 it    3.696 s   (5.8 x NPG2 iterations)
+   FISTA(eta=2)       487 it    4.025 s   (6.7 x NPG2 iterations)
+   FISTA(eta=3)       388 it    3.335 s   (5.3 x NPG2 iterations)
+
+min_len_curve_m=1000_n=10000_seed=1
+   NPG2               542 it    3.958 s
+   FISTA(eta=1.5)    2973 it   21.335 s   (5.5 x NPG2 iterations)
+   FISTA(eta=2)      3477 it   24.637 s   (6.4 x NPG2 iterations)
+   FISTA(eta=3)      2697 it   19.135 s   (5.0 x NPG2 iterations)
+
+dual_max_ent_m=500_n=2000_normal_seed=1
+   NPG2                33 it    0.324 s
+   FISTA(eta=1.5)  not reached: 2000 it, 41 s, final residual 2.8e-04
+   FISTA(eta=2)    not reached: 2000 it, 39 s, final residual 3.3e-04
+   FISTA(eta=3)    not reached: 2000 it, 39 s, final residual 4.2e-04
+
+dual_max_ent_m=2000_n=4000_normal_seed=1
+   NPG2                49 it    3.593 s
+   FISTA(eta=1.5)  not reached: 1216 it, 180 s, final residual 3.4e-03
+   FISTA(eta=2)    not reached: 1190 it, 180 s, final residual 4.0e-03
+   FISTA(eta=3)    not reached: 1171 it, 180 s, final residual 4.6e-03
+
+dual_max_ent_m=4000_n=5000_normal_seed=1
+   NPG2                62 it   11.737 s
+   FISTA(eta=1.5)  not reached: 474 it, 180 s, final residual 6.0e-02
+   FISTA(eta=2)    not reached: 483 it, 180 s, final residual 6.5e-02
+   FISTA(eta=3)    not reached: 483 it, 180 s, final residual 5.2e-02

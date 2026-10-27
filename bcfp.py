@@ -1,5 +1,5 @@
 import numpy as np
-from save_and_plot import save, load, make_all_plots
+from save_and_plot import save, load, make_all_plots, run_algorithms
 from alg import AdProxGrad, ProxGrad, NPG, NPG_quad, AdaPG
 import matplotlib.pyplot as plt
 
@@ -12,6 +12,7 @@ SAVE_DATA = False
 LOAD_RESULTS = True
 SAVE_RESULTS = True
 PLOT = False
+RERUN = "all"   # "all": run every algorithm; "npg" / "competitors": re-run only the NPG variants / only the other algorithms and merge them into the saved results
 ######################################################
 
 seed = 1
@@ -73,18 +74,14 @@ def run_bcfp( n = n, r = r, seed = seed):
         for key, history in loaded_results.items():
             results[key] = history
     else:
-        x2, history2 = Run(NPG, params = [0.1, 5.7, 0.99, 0.98], ver=2)
-        results["NPG2"] = history2
-
-        x4, history4 = Run(AdProxGrad)
-        results["AdPG"] = history4
-        
-        x5, history5 = Run(AdaPG, params=[3/2, 3/4])
-        results["AdaPG" + str([3/2, 3/4])] = history5
-
+        runners = {
+            "NPG2": lambda: Run(NPG, params = [0.1, 5.7, 0.99, 0.98], ver=2),
+            "AdPG": lambda: Run(AdProxGrad),
+            "AdaPG" + str([3/2, 3/4]): lambda: Run(AdaPG, params=[3/2, 3/4]),
+        }
         for param in [[1.1, 0.5], [1.2, 0.5]]:
-            x6, history6 = Run(ProxGrad, params = param)
-            results["PG-LS" + str(param)] = history6
+            runners["PG-LS" + str(param)] = lambda param=param: Run(ProxGrad, params = param)
+        results, xs = run_algorithms(runners, ['NPG2'], name_instance, name, RERUN)
 
     if SAVE_RESULTS and LOAD_RESULTS == False:
         save(results,name_instance,name, saving_obj=2)
