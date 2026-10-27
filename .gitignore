@@ -22,3 +22,6 @@ results/*
 !results/classic_armijo/
 !results/FISTA_test/**
 !results/classic_armijo/**
+
+# archive of the results for the download link
+*.zip
