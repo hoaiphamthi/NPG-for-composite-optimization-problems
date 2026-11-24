@@ -20,11 +20,11 @@ by Pham Thi Hoai and Nguyen Pham Duy Thai.
 - We use `numpy.random.seed` to ensure reproducibility. Datasets labeled 1–10 correspond to random seeds 1–10. Problems with the same size and random seed should always produce identical results.
 
 ### Running the Experiments
-- To obtain Figures 1–7, open the corresponding problem file (e.g., `lasso.py`) and set the control variables `LOAD_RESULTS = False` and `PLOT = False`. Then, in `run_experiment.py`, uncomment the relevant function call in `main()` (e.g., `experiment_lasso()`), and run the code.
-- To obtain Figure 8, run the corresponding problem file (e.g., `lasso.py`, `bcqp.py`, etc.) with `LOAD_RESULTS = False`. Set `PLOT = True` to display the plots.
+- To obtain the performance profiles (Figures 1–6 in Section 6, and the NMF profiles in Appendix C), open the corresponding problem file (e.g., `lasso.py`) and set the control variables `LOAD_RESULTS = False` and `PLOT = False`. Then, in `run_experiment.py`, uncomment the relevant function call in `main()` (e.g., `experiment_lasso()`), and run the code.
+- To obtain the objective value and stepsize plots (Appendix B), run the corresponding problem file (e.g., `lasso.py`, `bcqp.py`, etc.) with `LOAD_RESULTS = False`. Set `PLOT = True` to display the plots.
 
 ### Obtaining Plots from Presolved Results
-- To reproduce Figures 1–8 using our presolved results, download the `results` folder from the following link:  
+- To reproduce all the figures using our presolved results, download the `results` folder from the following link:  
   https://drive.google.com/file/d/1wuAD7BE1xs8VM6OfscVwkUYEipfxPY9X/view  
   Place it inside this repository, then run the corresponding file as described above with `LOAD_RESULTS = True`.
 
@@ -40,10 +40,10 @@ by Pham Thi Hoai and Nguyen Pham Duy Thai.
 - In `NPG` and `NPG_quad` (`alg.py`), the update of the stepsize two iterations back (`t_prev_prev`) has been corrected; all results and figures of the revised paper are computed with the corrected code.
 
 ### Experimental details
-For Figures 8 and 9 in the paper, the detailed sizes and random seeds for each problem are provided here:
+For the objective value and stepsize plots in Appendix B of the paper, the detailed sizes and random seeds for each problem are provided here:
 - Lasso                       : m = 1024, n = 8192, seed = 1   
 - Min length curve problem    : m = 100, n = 10000, seed = 1 
-- Maximum likelyhood problem  : n = 30, lb = 0.1, ub = 1000, M = 50, seed = 1
+- Maximum likelihood problem  : n = 30, lb = 0.1, ub = 1000, M = 50, seed = 1
 - Dual max entropy problem    : m = 4000, n = 5000, seed = 1
 - BCQP                        : n = 1000, r = 10, seed = 1
 - BCFP                        : n = 5000, r = 10, seed = 1
